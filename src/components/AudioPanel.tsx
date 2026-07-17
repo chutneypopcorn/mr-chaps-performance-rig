@@ -3,7 +3,7 @@ import { showSections } from '../data/showData';
 import type { SectionTimestamp } from '../hooks/useAudioManager';
 import {
   Volume2, VolumeX, Music, Upload,
-  Headphones, Play, Trash2, Clock,
+  Headphones, Play, Trash2, Clock, RotateCcw,
 } from 'lucide-react';
 
 interface AudioPanelProps {
@@ -22,6 +22,7 @@ interface AudioPanelProps {
   onSeekToSection: (sectionIndex: number) => void;
   onUpdateTimestamp: (sectionIndex: number, time: number) => void;
   onSetVolume: (v: number) => void;
+  onResetTimestamps?: () => void;
 }
 
 function formatTime(seconds: number) {
@@ -34,7 +35,7 @@ export default function AudioPanel({
   masterTrack, sectionTimestamps, isPlaying, currentTime, duration,
   volume, currentSectionIndex, onLoadMasterTrack, onRemoveMasterTrack,
   onTogglePlayPause, onStop, onSeekTo, onSeekToSection,
-  onUpdateTimestamp, onSetVolume,
+  onUpdateTimestamp, onSetVolume, onResetTimestamps,
 }: AudioPanelProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'player' | 'timeline'>('player');
@@ -78,7 +79,7 @@ export default function AudioPanel({
           {masterTrack && (
             <button onClick={onTogglePlayPause}
               className={`p-2 rounded-lg transition-all ${isPlaying ? 'text-red-400 bg-red-400/10' : 'text-emerald-400 bg-emerald-400/10'}`}>
-              {isPlaying ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              {isPlaying ? <SquareIcon className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </button>
           )}
         </div>
@@ -127,7 +128,7 @@ export default function AudioPanel({
                   <div className="flex items-center gap-2">
                     <button onClick={onTogglePlayPause}
                       className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${isPlaying ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                      {isPlaying ? <Square className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                      {isPlaying ? <SquareIcon className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                       {isPlaying ? 'PAUSE' : 'PLAY'}
                     </button>
                     <button onClick={onStop}
@@ -205,12 +206,24 @@ export default function AudioPanel({
 
           {activeTab === 'timeline' && masterTrack && (
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-4 h-4 text-pink-400" />
-                <div>
-                  <p className="text-xs font-bold text-white">Section Timestamps</p>
-                  <p className="text-[10px] text-zinc-500">Set when each section starts in the track</p>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-pink-400" />
+                  <div>
+                    <p className="text-xs font-bold text-white">Section Timestamps</p>
+                    <p className="text-[10px] text-zinc-500">Set when each section starts in the track</p>
+                  </div>
                 </div>
+                {onResetTimestamps && (
+                  <button
+                    onClick={onResetTimestamps}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-500 hover:text-pink-400 hover:bg-zinc-700 transition-all text-[10px] font-bold"
+                    title="Reset all timestamps to official defaults"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Reset
+                  </button>
+                )}
               </div>
 
               <div className="p-3 rounded-xl bg-zinc-800 mb-4">
@@ -291,18 +304,10 @@ export default function AudioPanel({
   );
 }
 
-function Square({ className }: { className?: string }) {
+function SquareIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <rect width="18" height="18" x="3" y="3" rx="2" />
-    </svg>
-  );
-}
-
-function RotateCcw({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
     </svg>
   );
 }
