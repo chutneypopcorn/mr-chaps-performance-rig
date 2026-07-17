@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { showSections } from '../data/showData';
 import type { SectionTimestamp } from '../hooks/useAudioManager';
 import {
@@ -41,6 +41,14 @@ export default function AudioPanel({
   const [activeTab, setActiveTab] = useState<'player' | 'timeline'>('player');
   const [editingTimestamp, setEditingTimestamp] = useState<number | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+
+  // Collapse by default on mobile (< 768px)
+  useEffect(() => {
+    const checkMobile = () => setIsExpanded(window.innerWidth >= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleFileSelect = () => {
     const input = document.createElement('input');
