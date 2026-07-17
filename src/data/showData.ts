@@ -34,7 +34,7 @@ export const DEFAULT_SECTION_TIMESTAMPS: number[] = [
   72,   // 02 - SHAVA SHAVA     (01:12)
   108,  // 03 - KALA CHASHMA    (01:48)
   165,  // 04 - WHAT JHUMKA     (02:45)
-  229,  // 05 - EK PAL KA JEENA (03:49)
+  228,  // 05 - EK PAL KA JEENA (03:48)
   239,  // 06 - PIYA PIYA       (03:15)
   245,  // 07 - THE RETIREMENT  (03:35)
   250,  // 08 - THE FRENZY      (03:50)
@@ -121,7 +121,7 @@ export const showSections: ShowSection[] = [
     songNote: 'Chorus x2 — audience dances along',
     triggerColor: 'from-sky-500 to-blue-600',
     script: [
-      { speaker: 'MR CHAPS', text: "Now, for this next song, I'm gonna need you to give me that rich auntie energy. The kind of auntie who arrives in a Mercedes to a shaadi and still complains about the catering. And I'm not teaching you this because you know it. And I know you know it. But remember, the move is not, “I have an earring.” The move is, “I have an earring, and you cannot afford it.", style: 'dialogue' },
+      { speaker: 'MR CHAPS', text: "Now, for this next song, I'm gonna need you to give me that rich aunty energy. The kind of aunty who arrives in a Mercedes to a shaadi and still complains about the catering. And I'm not teaching you this because you know it. And I know you know it. But remember, the move is not, “I have an earring.” The move is, “I have an earring, and you cannot afford it.", style: 'dialogue' },
       { speaker: 'STAGE', text: 'Assistants lead audience with a countdown towards the dance.', style: 'action' },
       { speaker: 'STAGE', text: 'What Jhumka chorus kicks in. The dancers lead the moves.', style: 'music' },
     ]
