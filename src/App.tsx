@@ -1,17 +1,17 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { showSections, SHOW_TITLE, SHOW_SUBTITLE } from './data/showData';
 import type { ShowSection } from './data/showData';
+import type { ScriptLine } from './data/showData';
 import { useAudioManager } from './hooks/useAudioManager';
 import AudioPanel from './components/AudioPanel';
 import {
   Mic2, Music, Zap, ChevronRight, ChevronLeft,
-  Play, Square, Timer, Activity, Headphones,
-  Maximize2, Minimize2, Sparkles, Volume2,
+  Play, Pause, Timer, Activity, Headphones,
+  Maximize2, Minimize2, Sparkles, Volume2, Image, Film,
 } from 'lucide-react';
 
 function App() {
   const [isShowLive, setIsShowLive] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const {
@@ -26,27 +26,18 @@ function App() {
   const effectiveSectionIndex = manualSectionIndex ?? currentSectionIndex;
   const currentSection: ShowSection = showSections[effectiveSectionIndex];
 
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
   // Try to load embedded track on mount
   useEffect(() => {
     loadEmbeddedTrack();
   }, [loadEmbeddedTrack]);
 
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (isShowLive) {
-      interval = setInterval(() => setElapsedTime(prev => prev + 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isShowLive]);
-
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+    const s = Math.floor(seconds % 60);
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
-
-  const estimatedDuration = duration > 0 ? duration : 22 * 60;
-  const showProgress = Math.min((elapsedTime / estimatedDuration) * 100, 100);
 
   const goToSection = useCallback((index: number) => {
     if (index >= 0 && index < showSections.length) {
@@ -58,27 +49,53 @@ function App() {
   const nextSection = useCallback(() => goToSection(effectiveSectionIndex + 1), [effectiveSectionIndex, goToSection]);
   const prevSection = useCallback(() => goToSection(effectiveSectionIndex - 1), [effectiveSectionIndex, goToSection]);
 
-  const toggleShow = useCallback(() => {
-    if (isShowLive) { setIsShowLive(false); pause(); }
-    else { setIsShowLive(true); setElapsedTime(0); setManualSectionIndex(null); if (isReady) play(); }
-  }, [isShowLive, pause, play, isReady]);
+  // Unified play/pause — syncs track position with show timer
+  const handlePlayPause = useCallback(() => {
+    if (!isReady) return;
+    if (!isShowLive) {
+      // First time starting — reset to beginning
+      setIsShowLive(true);
+      setManualSectionIndex(null);
+      stop();
+      setTimeout(() => play(), 50);
+    } else if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  }, [isReady, isShowLive, isPlaying, play, pause, stop]);
+
+  const handleStop = useCallback(() => {
+    setIsShowLive(false);
+    setManualSectionIndex(null);
+    stop();
+  }, [stop]);
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); setIsFullscreen(true); }
     else { document.exitFullscreen(); setIsFullscreen(false); }
   }, []);
 
+  // Scrub on the main progress bar
+  const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current || !masterTrack || duration <= 0) return;
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    seekTo(ratio * duration);
+  }, [masterTrack, duration, seekTo]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') { e.preventDefault(); nextSection(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSection(); }
-      else if (e.key === ' ') { e.preventDefault(); if (masterTrack) togglePlayPause(); }
+      else if (e.key === ' ') { e.preventDefault(); if (isReady) handlePlayPause(); }
       else if (e.key === 'f') { toggleFullscreen(); }
       else if (e.key === 'Escape' && isPlaying) { pause(); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [nextSection, prevSection, toggleFullscreen, isPlaying, pause, masterTrack, togglePlayPause]);
+  }, [nextSection, prevSection, toggleFullscreen, isPlaying, pause, isReady, handlePlayPause]);
 
   useEffect(() => {
     if (isPlaying && manualSectionIndex !== null) {
@@ -119,6 +136,20 @@ function App() {
     }
   };
 
+  // Determine main button state
+  const getButtonState = () => {
+    if (!isReady) return { text: 'START SHOW', icon: <Play className="w-4 h-4" />, disabled: true };
+    if (!isShowLive) return { text: 'START SHOW', icon: <Play className="w-4 h-4" />, disabled: false };
+    if (isPlaying) return { text: 'PAUSE', icon: <Pause className="w-4 h-4" />, disabled: false };
+    return { text: 'RESUME', icon: <Play className="w-4 h-4" />, disabled: false };
+  };
+  const btnState = getButtonState();
+
+  // Calculate progress percentage
+  const progressPercent = masterTrack && duration > 0
+    ? (currentTime / duration) * 100
+    : 0;
+
   return (
     <div className="h-screen w-screen bg-zinc-950 flex flex-col overflow-hidden">
       {/* TOP BAR */}
@@ -154,26 +185,51 @@ function App() {
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800">
             <Timer className="w-4 h-4 text-zinc-400" />
-            <span className="text-lg font-mono font-bold text-zinc-300">{formatTime(elapsedTime)}</span>
+            <span className="text-lg font-mono font-bold text-zinc-300">
+              {masterTrack ? formatTime(currentTime) : '--:--'}
+            </span>
           </div>
-          <button onClick={toggleShow} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${isShowLive ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : isReady ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}`} disabled={!isReady}>
-            {isShowLive ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            {isShowLive ? 'END SHOW' : 'START SHOW'}
+          <button
+            onClick={handlePlayPause}
+            disabled={btnState.disabled}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+              isPlaying
+                ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                : isReady
+                  ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+                  : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+            }`}
+          >
+            {btnState.icon}
+            {btnState.text}
           </button>
+          {isShowLive && (
+            <button onClick={handleStop}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all">
+              <StopIcon className="w-4 h-4" />
+            </button>
+          )}
           <button onClick={toggleFullscreen} className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all">
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      {/* PROGRESS BAR */}
-      <div className="w-full h-1 bg-zinc-800 shrink-0 relative">
+      {/* SCRUBBABLE PROGRESS BAR */}
+      <div
+        ref={progressBarRef}
+        onClick={handleProgressClick}
+        onTouchStart={handleProgressClick}
+        className="w-full h-2 bg-zinc-800 shrink-0 relative cursor-pointer group"
+      >
         {masterTrack && sectionTimestamps.map(ts => (
           <div key={ts.sectionIndex} className="absolute top-0 h-full w-0.5 bg-white/30 z-10"
             style={{ left: `${duration > 0 ? (ts.time / duration) * 100 : 0}%` }} />
         ))}
         <div className="h-full bg-gradient-to-r from-pink-500 to-rose-400 transition-all"
-          style={{ width: `${masterTrack && duration > 0 ? (currentTime / duration) * 100 : showProgress}%` }} />
+          style={{ width: `${progressPercent}%` }} />
+        {/* Hover tooltip line */}
+        <div className="absolute top-0 h-full w-full opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
       {/* MAIN */}
@@ -204,13 +260,7 @@ function App() {
           <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
             <div className="space-y-6 max-w-4xl">
               {currentSection.script.map((line, i) => (
-                <div key={i} className="p-4 rounded-xl hover:bg-zinc-800/40 transition-all">
-                  <div className={`flex items-center gap-2 mb-2 text-xs font-bold tracking-wider uppercase ${getSpeakerColor(line.speaker)}`}>
-                    {getSpeakerIcon(line.speaker)}
-                    {line.speaker}
-                  </div>
-                  <div className={getLineStyle(line.style)}>{line.text}</div>
-                </div>
+                <ScriptLineRenderer key={i} line={line} />
               ))}
               {currentSection.song && (
                 <div className="p-4 rounded-xl bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-500/20">
@@ -298,6 +348,89 @@ function App() {
         />
       </div>
     </div>
+  );
+}
+
+/** Renders a single script line with optional media embed */
+function ScriptLineRenderer({ line }: { line: ScriptLine }) {
+  const getLineStyle = (style: string) => {
+    switch (style) {
+      case 'dialogue': return 'dialogue-text text-white';
+      case 'action': return 'action-text text-zinc-400';
+      case 'music': return 'music-text text-pink-400';
+      case 'note': return 'note-text text-amber-400';
+      default: return 'teleprompter-text text-zinc-300';
+    }
+  };
+
+  const getSpeakerColor = (speaker: string) => {
+    switch (speaker) {
+      case 'MR CHAPS': return 'text-pink-400';
+      case 'STAGE': return 'text-zinc-500';
+      case 'NOTE': return 'text-amber-500';
+      default: return 'text-zinc-400';
+    }
+  };
+
+  const getSpeakerIcon = (speaker: string) => {
+    switch (speaker) {
+      case 'MR CHAPS': return <Mic2 className="w-4 h-4" />;
+      case 'STAGE': return <Sparkles className="w-4 h-4" />;
+      case 'NOTE': return <Volume2 className="w-4 h-4" />;
+      default: return <Music className="w-4 h-4" />;
+    }
+  };
+
+  return (
+    <div className="p-4 rounded-xl hover:bg-zinc-800/40 transition-all">
+      <div className={`flex items-center gap-2 mb-2 text-xs font-bold tracking-wider uppercase ${getSpeakerColor(line.speaker)}`}>
+        {getSpeakerIcon(line.speaker)}
+        {line.speaker}
+      </div>
+      <div className={getLineStyle(line.style)}>{line.text}</div>
+
+      {/* Media embed */}
+      {line.mediaUrl && line.mediaType === 'image' && (
+        <div className="mt-3">
+          <img
+            src={line.mediaUrl}
+            alt={line.mediaCaption || line.text}
+            className="rounded-lg max-h-64 object-contain border border-zinc-700/50"
+            loading="lazy"
+          />
+          {line.mediaCaption && (
+            <p className="text-[10px] text-zinc-500 mt-1 flex items-center gap-1">
+              <Image className="w-3 h-3" />
+              {line.mediaCaption}
+            </p>
+          )}
+        </div>
+      )}
+      {line.mediaUrl && line.mediaType === 'video' && (
+        <div className="mt-3">
+          <video
+            src={line.mediaUrl}
+            controls
+            className="rounded-lg max-h-64 w-full border border-zinc-700/50"
+            preload="metadata"
+          />
+          {line.mediaCaption && (
+            <p className="text-[10px] text-zinc-500 mt-1 flex items-center gap-1">
+              <Film className="w-3 h-3" />
+              {line.mediaCaption}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StopIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+    </svg>
   );
 }
 
