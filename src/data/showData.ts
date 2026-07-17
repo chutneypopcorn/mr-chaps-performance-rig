@@ -29,16 +29,16 @@ export const SHOW_SUBTITLE = "SHOW 3 // BAR BOMBAY // SYDNEY";
 // Update these values to match your actual pre-mixed track timing,
 // then commit and push so everyone gets the same defaults.
 export const DEFAULT_SECTION_TIMESTAMPS: number[] = [
-  0,    // 00 - INTRO          (00:00)
-  45,   // 01 - BACKUP         (00:45)
-  71,   // 02 - KALA CHASHMA   (01:11)
-  111,  // 03 - WHAT JHUMKA    (01:51)
-  145,  // 04 - EK PAL KA JEENA (02:25)
-  170,  // 05 - SHAVA SHAVA    (02:50)
-  195,  // 06 - PIYA PIYA      (03:15)
+  0,    // 00 - INTRO           (00:00)
+  45,   // 01 - BACKUP          (00:45)
+  72,   // 02 - SHAVA SHAVA     (01:12)
+  108,  // 03 - KALA CHASHMA    (01:48)
+  165,  // 04 - WHAT JHUMKA     (02:45)
+  229,  // 05 - EK PAL KA JEENA (03:49)
+  195,  // 06 - PIYA PIYA       (03:15)
   215,  // 07 - THE RETIREMENT  (03:35)
-  230,  // 08 - THE FRENZY     (03:50)
-  260,  // 09 - AKASH NUMBER   (04:20)
+  230,  // 08 - THE FRENZY      (03:50)
+  260,  // 09 - AKASH NUMBER    (04:20)
   285,  // 10 - ASHA BHOSLE FINALE (04:45)
 ];
 
@@ -50,7 +50,7 @@ export const showSections: ShowSection[] = [
     subtitle: 'The Disgusted Entrance',
     bpm: 106,
     defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[0],
-    backingTrack: 'Zindagi Meri Dance',
+    backingTrack: 'Instrumental Music',
     triggerColor: 'from-pink-600 to-rose-700',
     script: [
       { speaker: 'STAGE', text: 'Lights down. Instrumental musi begins pumping at 106 BPM. Mr Chaps struts onto stage already dancing. He freezes. Looks out at the audience with visible disgust.', style: 'action' },
@@ -60,105 +60,85 @@ export const showSections: ShowSection[] = [
   {
     id: 'backup',
     number: '01',
-    title: 'BACKUP',
+    title: 'ASSISTANT DANCERS',
     subtitle: 'The Dancer Introduction',
     bpm: 106,
     defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[1],
-    backingTrack: 'Zindagi Meri Dance (Instrumental)',
+    backingTrack: 'Instrumental Music',
     triggerColor: 'from-violet-600 to-purple-700',
     script: [
       { speaker: 'MR CHAPS', text: "So here's what's gonna happen. I'm gonna teach you some moves so you can dance along. But I can't do this alone. Where's my assistant?", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Backup dancers enter — striking a pose mid-stage.', style: 'action' },
-      { speaker: 'DANCER 1', text: "Hi, darling. I want to dance with you.", style: 'dialogue' },
+      { speaker: 'STAGE', text: 'Backup dancers enter one at a time - striking a pose mid-stage.', style: 'action' },
+      { speaker: 'DANCER 1', text: "Hi, dar ling. I want to dance with you.", style: 'dialogue' },
       { speaker: 'DANCER 2', text: "Dance. Dance of love. Dance on the moon.", style: 'dialogue' },
       { speaker: 'MR CHAPS', text: "Your first lesson, arms out.", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Dancers dramatically retreat to the back, playing along.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "Good. Much better. Now — who here actually knows how to dance? Be honest. No? Perfect. Fresh clay. Let's mould you.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "We're not doing boring choreography tonight. We're doing hook steps. The iconic ones. The ones your aunties do at weddings after three glasses of mango lassi. The ones that say 'I know this song and I am the main character right now.'", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Class is in session. First lesson — and it's a doozy.", style: 'dialogue' },
-    ]
-  },
-  {
-    id: 'kalachashma',
-    number: '02',
-    title: 'KALA CHASHMA',
-    subtitle: 'The Ignorance Is Bliss',
-    bpm: 106,
-    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[2],
-    backingTrack: 'Zindagi Meri Dance → Kala Chashma blend',
-    song: 'Kala Chashma',
-    songNote: 'Chorus x2 — audience dances along',
-    triggerColor: 'from-amber-500 to-orange-600',
-    script: [
-      { speaker: 'MR CHAPS', text: "Lesson One: The Kala Chashma. Or as I call it — 'The Ex at the Wedding.'", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Here's the psychology. You're at a family function. You see someone you used to know. Someone who wore *that* top. You know the one.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Step one — sunglasses on. Slowly. Like you just discovered sunlight. Step two — look away. With DISDAIN. Step three — shoulder brush. As if to say 'I have moved on. I have evolved. I have a skincare routine now.'", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Mr Chaps demonstrates. Backup dancers mirror from the back.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "Everyone try it. Sunglasses. Judgment. Shoulder. Yes! I felt that from the back row! The uncle in the kurta — you're FEELING it, I can tell!", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Now let's see if you can handle the real thing. DJ — test them.", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Music swells into Kala Chashma chorus. Mr Chaps and backup dancers lead the hook step. Audience joins in.', style: 'music' },
-      { speaker: 'NOTE', text: 'Let the chorus play through. Encourage audience participation with gestures.', style: 'note' },
-    ]
-  },
-  {
-    id: 'jhumka',
-    number: '03',
-    title: 'WHAT JHUMKA',
-    subtitle: 'The Rich Aunty Energy',
-    bpm: 106,
-    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[3],
-    backingTrack: 'Zindagi Meri Dance → What Jhumka blend',
-    song: 'What Jhumka',
-    songNote: 'Chorus x2 — audience dances along',
-    triggerColor: 'from-emerald-500 to-teal-600',
-    script: [
-      { speaker: 'STAGE', text: 'Music seamlessly blends back to Zindagi Meri Dance instrumental.', style: 'music' },
-      { speaker: 'MR CHAPS', text: "Stunning. Truly. Some of you have main-character energy I wasn't prepared for. That woman in the red — where have you been hiding? Yash Raj is calling.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Lesson Two: The What Jhumka. This isn't just a dance move. This is a lifestyle choice.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "This move says: 'Yes, these ARE real. And yes, they DID cost more than your rent.' It's rich aunty energy. The kind of aunty who arrives in a Mercedes to a shaadi and still complains about the catering.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Step one — point to the ear. Like you're showing off the goods. Step two — hip drop. Not a suggestion, a STATEMENT. Step three — that shoulder shimmy that says 'I have investments.'", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Demonstrates the move. The shoulder shimmy is theatrical and exaggerated.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "Backup — show them how it's done. Audience — don't just watch. You're not at the cinema. MOVE.", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "DJ — give us the Jhumka!", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'What Jhumka chorus drops. Full energy. Everyone dancing.', style: 'music' },
-    ]
-  },
-  {
-    id: 'ekpal',
-    number: '04',
-    title: 'EK PAL KA JEENA',
-    subtitle: 'The Hrithik Special',
-    bpm: 106,
-    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[4],
-    backingTrack: 'Zindagi Meri Dance → Ek Pal Ka Jeena blend',
-    song: 'Ek Pal Ka Jeena',
-    songNote: 'Chorus x2 — audience dances along',
-    triggerColor: 'from-sky-500 to-blue-600',
-    script: [
-      { speaker: 'STAGE', text: 'Music transitions. Mr Chaps strikes the iconic Ek Pal Ka Jeena pose.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "Oh. Oh no. You know what this is. Don't make me say it.", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Audience recognizes the pose. Cheers erupt.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "Yes. It's The Hrithik. The pose that launched a thousand gym memberships. The pose that made every boy in 2000 stand in front of a mirror thinking 'maybe if I tilt my head...'", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Lesson Three: The Ek Pal Ka Jeena. Arms out. Chest UP. Head tilt — not too much, you're not a curious puppy. And then... the step. The step that says 'I am handsome and I am AWARE of it.'", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Let's see those arms, Sydney! Wider! That person near the bar — put the drink DOWN, this is important! Yes! That's the energy!", style: 'dialogue' },
-      { speaker: 'MR CHAPS', text: "Now — who thinks they can do the turn? The full Hrithik spin? No? Wise. That move has injured many egos. DJ — drop it!", style: 'dialogue' },
-      { speaker: 'STAGE', text: 'Ek Pal Ka Jeena chorus kicks in. Mr Chaps leads the iconic moves.', style: 'music' },
     ]
   },
   {
     id: 'shava',
-    number: '05',
+    number: '02',
     title: 'SHAVA SHAVA',
     subtitle: 'The Wedding Classic',
     bpm: 106,
-    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[5],
+    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[2],
     backingTrack: 'Zindagi Meri Dance → Shava Shava blend',
-    song: 'Say Shava Shava',
+    song: 'Shava Shava',
+    songNote: 'Chorus x1 — audience dances along',
+    triggerColor: 'from-amber-500 to-orange-600',
+    script: [
+      { speaker: 'MR CHAPS', text: "One more time. Cross your arms, pump your fist. Slash, slash. Toot, toot. Five, six, seven, eight.'", style: 'dialogue' },
+      { speaker: 'STAGE', text: 'Dancers and audience perform one chorus of Shava Shava.', style: 'music' },
+      { speaker: 'MR CHAPS', text: "Stunning. Some of you have main character energy. Now, who wants to learn to actually SLAY a hook step?", style: 'dialogue' },
+    ]
+  },
+  {
+    id: 'kalachashma',
+    number: '03',
+    title: 'KALA CHASHMA',
+    subtitle: 'Slay The Hook Step',
+    bpm: 106,
+    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[3],
+    backingTrack: 'Zindagi Meri Dance → Kala Chashma blend',
+    song: 'What Jhumka',
+    songNote: 'Chorus x2 — audience dances along',
+    triggerColor: 'from-emerald-500 to-teal-600',
+    script: [
+      { speaker: 'STAGE', text: 'Dancers teach the hook step over Zindagi Meri Dance.', style: 'music' },
+      { speaker: 'MR CHAPS', text: "One more time.", style: 'dialogue' },
+      { speaker: 'MR CHAPS', text: "Now let's see if you can handle the real thing. DJ, drop it!", style: 'dialogue' },
+      { speaker: 'STAGE', text: 'Dancers and audience perform two choruses of Kala Chashma.', style: 'music' },
+    ]
+  },
+  {
+    id: 'jhumka',
+    number: '04',
+    title: 'WHAT JHUMKA',
+    subtitle: 'The Rich Aunty Energy',
+    bpm: 106,
+    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[4],
+    backingTrack: 'Zindagi Meri Dance → What Jhumka blend',
+    song: 'What Jhumka',
+    songNote: 'Chorus x2 — audience dances along',
+    triggerColor: 'from-sky-500 to-blue-600',
+    script: [
+      { speaker: 'MR CHAPS', text: "Now, for this next song, I'm gonna need you to give me that rich auntie energy. The kind of auntie who arrives in a Mercedes to a shaadi and still complains about the catering. And I'm not teaching you this because you know it. And I know you know it. But remember, the move is not, “I have an earring.” The move is, “I have an earring, and you cannot afford it.", style: 'dialogue' },
+      { speaker: 'STAGE', text: 'Assistants lead audience with a countdown towards the dance.', style: 'action' },
+      { speaker: 'STAGE', text: 'What Jhumka chorus kicks in. The dancers lead the moves.', style: 'music' },
+    ]
+  },
+  {
+    id: 'ekpal',
+    number: '05',
+    title: 'EK PAL KA JEENA',
+    subtitle: 'The Hrithik Classic',
+    bpm: 106,
+    defaultTimestamp: DEFAULT_SECTION_TIMESTAMPS[5],
+    backingTrack: 'Zindagi Meri Dance → Ek Pal Ka Jeena blend',
+    song: 'Ek Pal Ka Jeena',
     songNote: 'Chorus x2 — audience dances along',
     triggerColor: 'from-rose-500 to-red-600',
     script: [
-      { speaker: 'STAGE', text: 'Music blends. Mr Chaps wipes his brow dramatically.', style: 'action' },
-      { speaker: 'MR CHAPS', text: "I'm exhausted. You're exhausting. But we're not done. Oh no. We have to do the one. The ONE. The song that plays at every wedding, every sangeet, every function where someone opens a bottle of Royal Challenge.", style: 'dialogue' },
+      { speaker: 'MR CHAPS', text: "{Dialogue for Hrithik – TBC}", style: 'dialogue' },
       { speaker: 'MR CHAPS', text: "Lesson Four: Shava Shava. This is not a dance. This is a CULTURAL OBLIGATION. If this song plays and you're not moving, your aunties are legally allowed to gossip about you for six months.", style: 'dialogue' },
       { speaker: 'MR CHAPS', text: "Arms up — like you're welcoming the baraat even though they're two hours late. Step touch — left, right, like you're squashing cockroaches in style. And then... the shoulder. THE SHOULDER. Give it some Punjabi energy!", style: 'dialogue' },
       { speaker: 'STAGE', text: 'Demonstrates with full commitment. Backup dancers go hard.', style: 'action' },
